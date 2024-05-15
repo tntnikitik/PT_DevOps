@@ -21,8 +21,8 @@ psql -c "CREATE DATABASE $DB_DATABASE;"
 psql -d $DB_DATABASE -a -f /init.sql
 psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
 psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE TO $DB_USER;"
-psql -d $DB_DATABASE -c "ALTER TABLE Emails OWNER TO $DB_USER;"
-psql -d $DB_DATABASE -c "ALTER TABLE Phones OWNER TO $DB_USER;"
+psql -d $DB_DATABASE -c "ALTER TABLE emails OWNER TO $DB_USER;"
+psql -d $DB_DATABASE -c "ALTER TABLE phones OWNER TO $DB_USER;"
 psql -d db_bot -c "GRANT EXECUTE ON FUNCTION pg_current_logfile() TO $DB_USER;"
 psql -d db_bot -c "GRANT EXECUTE ON FUNCTION pg_read_file(text) TO $DB_USER;"
 echo "host replication $DB_REPL_USER 0.0.0.0/0 trust" >> $path_pg_hba
