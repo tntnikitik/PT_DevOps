@@ -2,7 +2,7 @@ version: '3'
 
 services:
   bot:
-    image: bot
+    image: bot_image
     container_name: bot
     env_file:
       - '.env'
@@ -12,7 +12,7 @@ services:
       - db
 
   db:
-    image: db
+    image: db_image
     container_name: db
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -22,7 +22,7 @@ services:
       - nikita_net
 
   db_repl:
-    image: db_repl
+    image: db_repl_image
     container_name: db_repl
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
