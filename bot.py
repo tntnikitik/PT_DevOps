@@ -30,6 +30,7 @@ db_repl_user = os.getenv('DB_REPL_USER')
 repl_logs_user = os.getenv('RM_LOGS_USER')
 repl_logs_password = os.getenv('RM_LOGS_PASSWORD')
 repl_logs_port = os.getenv('DB_REPL_PORT')	
+repl_logs_host = os.getenv('DB_REPL_HOST')	
 
 logging.basicConfig(
     filename='log.txt', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -197,7 +198,7 @@ def sshConnect(command):
 def sshConnectMaster(command):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=host_db, username=repl_logs_user, password=repl_logs_password, port=repl_logs_port)
+    client.connect(hostname=repl_logs_host, username=repl_logs_user, password=repl_logs_password, port=repl_logs_port)
     stdin, stdout, stderr = client.exec_command(command)
     data = stdout.read() + stderr.read()
     client.close()
