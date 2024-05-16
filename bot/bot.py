@@ -14,7 +14,7 @@ KEY = 1
 
 
 connection = None
-dotenv_path = Path('sens.env')
+dotenv_path = Path('.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 token = os.getenv('TOKEN')
