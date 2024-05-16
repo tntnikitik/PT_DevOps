@@ -194,7 +194,7 @@ def sshConnect(command):
 def sshConnectMaster(command):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=host_db, username="master", password="master", port=port)
+    client.connect(hostname=host_db, username=username_db, password=password_db, port=port)
     stdin, stdout, stderr = client.exec_command(command)
     data = stdout.read() + stderr.read()
     client.close()
