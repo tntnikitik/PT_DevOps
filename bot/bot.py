@@ -70,6 +70,7 @@ def find_phone_number (update: Update, context):
 
     phoneNumRegex = re.compile(r'(?:\+7|8)(?:(?:\(|\ \(|)\d{3}(?:\)|\)\ |)|[- ]?\d{3}[- ]?)(?:\d{3}[- ]?)(?:\d{2}[- ]?)(?:\d{2})')
     phoneNumberList = phoneNumRegex.findall(user_input)
+
     uniquePhones = []
     if not phoneNumberList:
         update.message.reply_text('Телефонные номера не найдены')
@@ -78,12 +79,13 @@ def find_phone_number (update: Update, context):
         phoneNumbers = ''
         for i in range(len(phoneNumberList)):
             if phoneNumberList[i] not in phoneNumbers:
-                phoneNumbers += f'{i+1}. {phoneNumberList[i]}\n'
+                emails += f'{i+1}. {phoneNumberList[i]}\n'
                 uniquePhones.append(phoneNumberList[i])
         context.user_data[KEY] = uniquePhones
         update.message.reply_text(phoneNumbers + '\n/yes, чтобы записать\n/no для отказа')
         return 'write_confirm'
-    
+
+
 def write_confirmed_phones (update: Update, context):
     plist = context.user_data.get(KEY, [])
     if len(plist) > 0:
@@ -92,7 +94,7 @@ def write_confirmed_phones (update: Update, context):
                                       host=host_db,
                                       port=port_db,
                                       database=database)
-    
+
         try:
             cursor = connection.cursor()
             for phone_number in plist:
@@ -125,6 +127,7 @@ def find_email (update: Update, context):
 
     emailRegex = re.compile(r'[a-zA-Z0-9._-]+@[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}')
     emailList = emailRegex.findall(user_input)
+
     uniqueEmails = []
     if not emailList:
         update.message.reply_text('Email-адреса не найдены:')
@@ -138,7 +141,7 @@ def find_email (update: Update, context):
         context.user_data[KEY] = uniqueEmails
         update.message.reply_text(emails + '\n/yes, чтобы записать\n/no для отказа')
         return 'write_confirm'
-    
+
 def write_confirmed_emails (update: Update, context):
     elist = context.user_data.get(KEY, [])
     if len(elist) > 0:
@@ -147,7 +150,7 @@ def write_confirmed_emails (update: Update, context):
                                       host=host_db,
                                       port=port_db,
                                       database=database)
-    
+
         try:
             cursor = connection.cursor()
             for email_number in elist:
@@ -165,17 +168,17 @@ def write_confirmed_emails (update: Update, context):
             logging.info("Соединение с PostgreSQL закрыто")
             context.user_data[KEY] = None
             return ConversationHandler.END
-            
+
     else:
         context.user_data[KEY] = None
         return ConversationHandler.END
-    
+
 
 def verify_password (update: Update, context):
     user_input = update.message.text
 
     passRegex = r'(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*()]{8,}'
-    
+
     if re.match(passRegex, user_input):
         update.message.reply_text('Пароль сложный')
     else:
@@ -257,11 +260,27 @@ def get_apt_list (update: Update, context):
     return ConversationHandler.END
 
 def get_services (update: Update, context):
-    update.message.reply_text(sshConnect('systemctl list-units --state=running --no-pager'))
+    update.message.reply_text(sshConnect('service --status-all'))
     return ConversationHandler.END
 
 def get_repl_logs (update: Update, context):
-    update.message.reply_text(sshConnectMaster('cat /var/log/postgresql/postgresql-15-main.log | grep repl_user | tail -n20'))
+    connection = psycopg2.connect(host=host_db, port=port_db, database=database, user=username_db, password=password_db)
+    cursor = connection.cursor()
+
+    data = cursor.execute("SELECT pg_read_file(pg_current_logfile());")
+    data = cursor.fetchall()
+    data = str(data).replace('\\n', '\n').replace('\\t', '\t')[2:-1]
+    answer = 'Логи репликации:\n'
+
+    for str1 in data.split('\n'):
+        if db_repl_user in str1:
+            answer += str1 + '\n'
+    if len(answer) == 17:
+        answer = 'Нет логов репликации.'
+    for x in range(0, len(answer), 4096):
+        update.message.reply_text(answer[x:x+4096])
+
+    #update.message.reply_text(sshConnectMaster('cat /var/log/postgresql/postgresql-15-main.log | grep repl_user | tail -n20'))
     return ConversationHandler.END
 
 def get_phone_numbers (update: Update, context):
@@ -452,7 +471,7 @@ def main():
         },
         fallbacks=[]
     )
-    
+
     convHandlerGetEmails = ConversationHandler(
         entry_points=[CommandHandler('get_emails', get_emails)],
         states={
@@ -468,7 +487,7 @@ def main():
         },
         fallbacks=[]
     )
-		
+
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", helpCommand))
     dp.add_handler(convHandlerFindPhoneNumbers)
@@ -490,8 +509,8 @@ def main():
     dp.add_handler(convHandlerGetReplLogs)
     dp.add_handler(convHandlerGetEmails)
     dp.add_handler(convHandlerGetPhoneNumbers)
-		
-		
+
+
     updater.start_polling()
 
     updater.idle()
