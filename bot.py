@@ -14,7 +14,7 @@ KEY = 1
 
 
 connection = None
-main.load_dotenv()
+#main.load_dotenv()
 
 token = os.getenv('TOKEN')
 host = os.getenv('RM_HOST')
