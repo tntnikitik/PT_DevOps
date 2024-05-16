@@ -260,7 +260,7 @@ def get_apt_list (update: Update, context):
     return ConversationHandler.END
 
 def get_services (update: Update, context):
-    update.message.reply_text(sshConnect('service --status-all'))
+    update.message.reply_text(sshConnect('systemctl list-units --state=running --no-pager'))
     return ConversationHandler.END
 
 def get_repl_logs (update: Update, context):
