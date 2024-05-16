@@ -29,8 +29,8 @@ database = os.getenv('DB_DATABASE')
 db_repl_user = os.getenv('DB_REPL_USER')
 repl_logs_user = os.getenv('RM_LOGS_USER')
 repl_logs_password = os.getenv('RM_LOGS_PASSWORD')
-repl_logs_port = os.getenv('DB_REPL_PORT')	
-repl_logs_host = os.getenv('DB_REPL_HOST')	
+repl_logs_port = os.getenv('RM_LOGS_PORT')	
+repl_logs_host = os.getenv('RM_LOGS_HOST')	
 
 logging.basicConfig(
     filename='log.txt', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
