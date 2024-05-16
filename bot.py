@@ -264,7 +264,7 @@ def get_services (update: Update, context):
     return ConversationHandler.END
 
 def get_repl_logs (update: Update, context):
-    update.message.reply_text(sshConnectMaster('cat /var/log/postgresql/postgresql.log | grep repl_user | tail -n20'))
+    update.message.reply_text(sshConnectMaster('cat /var/log/postgresql/postgresql.log | grep repl_user | tail -n10'))
     return ConversationHandler.END
 
 def get_phone_numbers (update: Update, context):
