@@ -79,7 +79,7 @@ def find_phone_number (update: Update, context):
         phoneNumbers = ''
         for i in range(len(phoneNumberList)):
             if phoneNumberList[i] not in phoneNumbers:
-                emails += f'{i+1}. {phoneNumberList[i]}\n'
+                phoneNumbers += f'{i+1}. {phoneNumberList[i]}\n'
                 uniquePhones.append(phoneNumberList[i])
         context.user_data[KEY] = uniquePhones
         update.message.reply_text(phoneNumbers + '\n/yes, чтобы записать\n/no для отказа')
