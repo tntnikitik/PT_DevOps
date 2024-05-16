@@ -70,18 +70,19 @@ def find_phone_number (update: Update, context):
 
     phoneNumRegex = re.compile(r'(?:\+7|8)(?:(?:\(|\ \(|)\d{3}(?:\)|\)\ |)|[- ]?\d{3}[- ]?)(?:\d{3}[- ]?)(?:\d{2}[- ]?)(?:\d{2})')
     phoneNumberList = phoneNumRegex.findall(user_input)
-
+    uniquePhones = []
     if not phoneNumberList:
         update.message.reply_text('Телефонные номера не найдены')
         return ConversationHandler.END
     else:
         phoneNumbers = ''
         for i in range(len(phoneNumberList)):
-            phoneNumbers += f'{i+1}. {phoneNumberList[i]}\n'
-        context.user_data[KEY] = phoneNumberList
+            if phoneNumberList[i] not in phoneNumbers:
+                phoneNumbers += f'{i+1}. {phoneNumberList[i]}\n'
+                uniquePhones.append(phoneNumberList[i])
+        context.user_data[KEY] = uniquePhones
         update.message.reply_text(phoneNumbers + '\n/yes, чтобы записать\n/no для отказа')
         return 'write_confirm'
-
     
 def write_confirmed_phones (update: Update, context):
     plist = context.user_data.get(KEY, [])
@@ -124,15 +125,17 @@ def find_email (update: Update, context):
 
     emailRegex = re.compile(r'[a-zA-Z0-9._-]+@[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}')
     emailList = emailRegex.findall(user_input)
-
+    uniqueEmails = []
     if not emailList:
         update.message.reply_text('Email-адреса не найдены:')
         return ConversationHandler.END
     else:
         emails = ''
         for i in range(len(emailList)):
-            emails += f'{i+1}. {emailList[i]}\n'
-        context.user_data[KEY] = emailList
+            if emailList[i] not in emails:
+                emails += f'{i+1}. {emailList[i]}\n'
+                uniqueEmails.append(emailList[i])
+        context.user_data[KEY] = uniqueEmails
         update.message.reply_text(emails + '\n/yes, чтобы записать\n/no для отказа')
         return 'write_confirm'
     
@@ -254,7 +257,7 @@ def get_apt_list (update: Update, context):
     return ConversationHandler.END
 
 def get_services (update: Update, context):
-    update.message.reply_text(sshConnect('service --status-all'))
+    update.message.reply_text(sshConnect('systemctl list-units --state=running --no-pager'))
     return ConversationHandler.END
 
 def get_repl_logs (update: Update, context):
