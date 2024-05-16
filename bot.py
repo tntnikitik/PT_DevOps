@@ -14,8 +14,7 @@ KEY = 1
 
 
 connection = None
-dotenv_path = Path('sens.env')
-load_dotenv(dotenv_path=dotenv_path)
+main.load_dotenv()
 
 token = os.getenv('TOKEN')
 host = os.getenv('RM_HOST')
